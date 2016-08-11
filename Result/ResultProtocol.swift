@@ -3,7 +3,7 @@
 /// A type that can represent either failure with an error or success with a result value.
 public protocol ResultProtocol {
 	associatedtype Value
-	associatedtype Error: ErrorProtocol
+	associatedtype Error: Swift.Error
 	
 	/// Constructs a successful result wrapping a `value`.
 	init(value: Value)
@@ -82,8 +82,8 @@ public extension ResultProtocol {
 }
 
 /// Protocol used to constrain `tryMap` to `Result`s with compatible `Error`s.
-public protocol ErrorProtocolConvertible: ErrorProtocol {
-	static func error(from error: ErrorProtocol) -> Self
+public protocol ErrorProtocolConvertible: Swift.Error {
+	static func error(from error: Swift.Error) -> Self
 }
 
 public extension ResultProtocol where Error: ErrorProtocolConvertible {
@@ -162,8 +162,8 @@ public func ?? <T: ResultProtocol> (left: T, right: @autoclosure () -> T) -> T {
 @available(*, unavailable, renamed: "ResultProtocol")
 public typealias ResultType = ResultProtocol
 
-@available(*, unavailable, renamed: "ErrorProtocol")
-public typealias ResultErrorType = ErrorProtocol
+@available(*, unavailable, renamed: "Error")
+public typealias ResultErrorType = Swift.Error
 
 @available(*, unavailable, renamed: "ErrorProtocolConvertible")
 public typealias ErrorTypeConvertible = ErrorProtocolConvertible
@@ -177,7 +177,7 @@ extension ResultProtocol {
 
 extension ErrorProtocolConvertible {
 	@available(*, unavailable, renamed: "error(from:)")
-	public static func errorFromErrorType(_ error: ErrorProtocol) -> Self {
+	public static func errorFromErrorType(_ error: Swift.Error) -> Self {
 		fatalError()
 	}
 }

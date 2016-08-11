@@ -44,8 +44,8 @@ final class ResultTests: XCTestCase {
 	
 	func testTryCatchProducesFailures() {
 		#if os(Linux)
-			/// FIXME: skipped on Linux because of crash with swift-3.0-preview-1.
-			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-preview-1.")
+			/// FIXME: skipped on Linux because of crash with swift-3.0-PREVIEW-4.
+			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-PREVIEW-4.")
 		#else
 			let result: Result<String, NSError> = Result(try tryIsSuccess(nil))
 			XCTAssert(result.error == error)
@@ -61,8 +61,8 @@ final class ResultTests: XCTestCase {
 
 	func testTryCatchWithFunctionCatchProducesFailures() {
 		#if os(Linux)
-			/// FIXME: skipped on Linux because of crash with swift-3.0-preview-1.
-			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-preview-1.")
+			/// FIXME: skipped on Linux because of crash with swift-3.0-PREVIEW-4.
+			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-PREVIEW-4.")
 		#else
 			let function = { try tryIsSuccess(nil) }
 
@@ -81,8 +81,8 @@ final class ResultTests: XCTestCase {
 
 	func testMaterializeProducesFailures() {
 		#if os(Linux)
-			/// FIXME: skipped on Linux because of crash with swift-3.0-preview-1.
-			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-preview-1.")
+			/// FIXME: skipped on Linux because of crash with swift-3.0-PREVIEW-4.
+			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-PREVIEW-4.")
 		#else
 			let result1 = materialize(try tryIsSuccess(nil))
 			XCTAssert(result1.error == error)
@@ -100,7 +100,7 @@ final class ResultTests: XCTestCase {
 	}
 
 	func testRecoverProducesRightForLeftFailure() {
-		struct Error: ErrorProtocol {}
+		struct Error: Swift.Error {}
 
 		let left = Result<String, Error>.failure(Error())
 		XCTAssertEqual(left.recover("right"), "right")
@@ -116,7 +116,7 @@ final class ResultTests: XCTestCase {
 	}
 
 	func testRecoverWithProducesRightSuccessForLeftFailureAndRightSuccess() {
-		struct Error: ErrorProtocol {}
+		struct Error: Swift.Error {}
 
 		let left = Result<String, Error>.failure(Error())
 		let right = Result<String, Error>.success("right")
@@ -125,7 +125,7 @@ final class ResultTests: XCTestCase {
 	}
 
 	func testRecoverWithProducesRightFailureForLeftFailureAndRightFailure() {
-		enum Error: ErrorProtocol { case left, right }
+		enum Error: Swift.Error { case left, right }
 
 		let left = Result<String, Error>.failure(.left)
 		let right = Result<String, Error>.failure(.right)
@@ -161,17 +161,22 @@ final class ResultTests: XCTestCase {
 		XCTAssertNil(result.error)
 	}
 
+	#endif
+
 	func testTryMapProducesSuccess() {
 		let result = success.tryMap(tryIsSuccess)
 		XCTAssert(result == success)
 	}
 
 	func testTryMapProducesFailure() {
-		let result = Result<String, NSError>.success("fail").tryMap(tryIsSuccess)
-		XCTAssert(result == failure)
+		#if os(Linux)
+			/// FIXME: skipped on Linux because of crash with swift-3.0-PREVIEW-4.
+			print("Test Case `\(#function)` skipped on Linux because of crash with swift-3.0-PREVIEW-4.")
+		#else
+			let result = Result<String, NSError>.success("fail").tryMap(tryIsSuccess)
+			XCTAssert(result == failure)
+		#endif
 	}
-
-	#endif
 
 	// MARK: Operators
 
@@ -220,7 +225,7 @@ func attempt<T>(_ value: T, succeed: Bool, error: NSErrorPointer) -> T? {
 #endif
 
 func tryIsSuccess(_ text: String?) throws -> String {
-	guard let text = text where text == "success" else {
+	guard let text = text, text == "success" else {
 		throw error
 	}
 
@@ -268,8 +273,8 @@ extension ResultTests {
 //			("testTryProducesFailuresForOptionalWithErrorReturnedByReference", testTryProducesFailuresForOptionalWithErrorReturnedByReference),
 //			("testTryProducesSuccessesForBooleanAPI", testTryProducesSuccessesForBooleanAPI),
 //			("testTryProducesSuccessesForOptionalAPI", testTryProducesSuccessesForOptionalAPI),
-//			("testTryMapProducesSuccess", testTryMapProducesSuccess),
-//			("testTryMapProducesFailure", testTryMapProducesFailure),
+			("testTryMapProducesSuccess", testTryMapProducesSuccess),
+			("testTryMapProducesFailure", testTryMapProducesFailure),
 			("testConjunctionOperator", testConjunctionOperator),
 		]
 	}
